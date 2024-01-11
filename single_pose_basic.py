@@ -52,18 +52,16 @@ def draw_keypoints(frame, keypoints, confidence_threshold=0.4):
 
 def run_movenet(input_image):
     """Runs MoveNet on a single image and returns keypoints."""
-    # Resize and pad the image to keep the aspect ratio and fit the expected size.
-    input_image = tf.image.resize_with_pad(
-        input_image, input_size, input_size)
+    # Resize the image without padding
+    input_image = tf.image.resize(input_image, [192, 192])
 
     # Convert image to int32, as expected by the loaded model
     input_image = tf.cast(input_image, dtype=tf.int32)
 
-    # Run model inference.
+    # Run model inference
     outputs = model.signatures['serving_default'](input_image)
-    # Output is a [1, 1, 17, 3] tensor.
+    # Output is a [1, 1, 17, 3] tensor
     keypoints_with_scores = outputs['output_0'].numpy()
-    # We take [0, 0] since the batch size and number of detections per image are both 1
     return keypoints_with_scores[0, 0]
 
 
